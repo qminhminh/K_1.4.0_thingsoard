@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thingsboard_app/config/themes/tb_theme_utils.dart';

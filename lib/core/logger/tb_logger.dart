@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:logger/logger.dart';
 import 'package:thingsboard_app/core/logger/tb_log_output.dart';
 import 'package:thingsboard_app/core/logger/tb_logs_filter.dart';

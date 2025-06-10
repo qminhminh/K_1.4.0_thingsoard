@@ -130,13 +130,13 @@ void main() {
             () => tbContext.reInit(
               endpoint: any(named: 'endpoint'),
               onDone: any(named: 'onDone'),
-              onError: any(named: 'onError'),
+              onAuthError: any(named: 'onAuthError'),
             ),
           ).thenAnswer(
             (invocation) {
-              final onError =
-                  invocation.namedArguments[const Symbol('onError')];
-              onError(
+              final onAuthError =
+                  invocation.namedArguments[const Symbol('onAuthError')];
+              onAuthError(
                 ThingsboardError(message: 'TBClient re-init error message'),
               );
 
@@ -209,7 +209,7 @@ void main() {
             () => tbContext.reInit(
               endpoint: any(named: 'endpoint'),
               onDone: any(named: 'onDone'),
-              onError: any(named: 'onError'),
+              onAuthError: any(named: 'onAuthError'),
             ),
           ).thenAnswer(
             (invocation) {
