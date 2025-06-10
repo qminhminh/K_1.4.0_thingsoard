@@ -1,4 +1,4 @@
-package org.thingsboard.pe.app
+package com.nedok.NedokCamera
 
 import android.content.Context
 import android.content.Intent

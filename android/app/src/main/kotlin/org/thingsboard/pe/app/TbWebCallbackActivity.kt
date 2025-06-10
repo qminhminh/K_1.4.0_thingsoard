@@ -1,4 +1,4 @@
-package org.thingsboard.pe.app
+package com.nedok.NedokCamera
 
 import android.app.Activity
 import android.net.Uri

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.thingsboard.pe.app">
+    package="com.nedok.NedokCamera">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -28,7 +28,7 @@
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:requestLegacyExternalStorage="true"
-        android:label="ThingsBoard PE App"
+        android:label="Nedok"
         android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/launcher_icon">
         <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
@@ -81,7 +81,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
-                    android:host="thingsboard.cloud"
+                    android:host="datahub-dev.i-nedok.com"
                     android:pathPrefix="/api/noauth/qr" />
             </intent-filter>
         </activity>
@@ -93,7 +93,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="org.thingsboard.pe.app.auth" />
+                <data android:scheme="com.nedok.NedokCamera.auth" />
             </intent-filter>
         </activity>
 
