@@ -23,6 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
+    namespace 'org.thingsboard.pe.app'
     compileSdkVersion 34
 
     sourceSets {
@@ -46,8 +47,21 @@ android {
         }
     }
 
+    compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+        // Sets Java compatibility to Java 8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     dependencies {
         implementation 'androidx.browser:browser:1.0.0'
+        coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.0'
+    }
+    
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
