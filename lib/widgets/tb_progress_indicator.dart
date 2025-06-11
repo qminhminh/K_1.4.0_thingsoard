@@ -101,7 +101,7 @@ class _TbProgressIndicatorState extends State<TbProgressIndicator>
           Image.asset(
             'assets/images/logoapp.png',
             height: widget.size,
-            width: widget.size,
+            width: 48,
             fit: BoxFit.contain,
           ),
           AnimatedBuilder(
@@ -109,10 +109,10 @@ class _TbProgressIndicatorState extends State<TbProgressIndicator>
             child: SvgPicture.asset(
               ThingsboardImage.thingsboardOuter,
               height: widget.size,
-              width: widget.size,
+              width: 100,
               colorFilter: const ColorFilter.mode(
                 // Thay đổi màu thành xanh lá cây sáng (gần với ảnh)
-                Color.fromARGB(255, 148, 239, 148), // Màu xanh lá cây (#00FF00)
+                Color(0xFFF15A24), // Màu xanh lá cây (#00FF00)
                 BlendMode.srcIn,
               ),
             ),
