@@ -98,12 +98,12 @@ class _TbProgressIndicatorState extends State<TbProgressIndicator>
     } else {
       return Stack(
         children: [
-          Image.asset(
-            'assets/images/logoapp.png',
-            height: widget.size,
-            width: 48,
-            fit: BoxFit.contain,
-          ),
+          // Image.asset(
+          //   'assets/images/logoapp.png',
+          //   height: widget.size,
+          //   width: 48,
+          //   fit: BoxFit.contain,
+          // ),
           AnimatedBuilder(
             animation: _rotation!,
             child: SvgPicture.asset(

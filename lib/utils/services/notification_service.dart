@@ -1,5 +1,8 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_declarations
+
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -129,7 +132,7 @@ class NotificationService {
 
   Future<void> _initFlutterLocalNotificationsPlugin() async {
     const initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/thingsboard');
+        AndroidInitializationSettings('@drawable/notification_icon');
 
     const initializationSettingsIOS = DarwinInitializationSettings();
 
@@ -149,18 +152,33 @@ class NotificationService {
       },
     );
 
-    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'general',
       'General notifications',
       importance: Importance.max,
       priority: Priority.high,
       channelDescription: 'This channel is used for general notifications',
       showWhen: false,
+      icon: '@drawable/notification_icon',
+      color: Color(0xFFF15A24),
+      ledColor: Color(0xFFF15A24),
+      ledOnMs: 1000,
+      ledOffMs: 500,
+      enableLights: true,
+      enableVibration: true,
     );
 
-    const iOSPlatformChannelSpecifics = DarwinNotificationDetails();
+    final iOSPlatformChannelSpecifics = const DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'default',
+      threadIdentifier: 'general',
+      interruptionLevel: InterruptionLevel.active,
+      categoryIdentifier: 'general',
+    );
 
-    _notificationDetails = const NotificationDetails(
+    _notificationDetails = NotificationDetails(
       android: androidPlatformChannelSpecifics,
       iOS: iOSPlatformChannelSpecifics,
     );
