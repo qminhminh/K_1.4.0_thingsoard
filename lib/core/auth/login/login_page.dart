@@ -496,9 +496,8 @@ class _LoginPageState extends TbPageState<LoginPage>
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 16,
                                 ),
-                                side: const BorderSide(
-                                  color: Color(0xFF4EC3C7),
-                                ),
+                                side:
+                                    const BorderSide(color: Color(0xFFF15A24)),
                               ),
                               onPressed: _authenticateWithBiometrics,
                               child: Row(
@@ -506,13 +505,13 @@ class _LoginPageState extends TbPageState<LoginPage>
                                 children: [
                                   const Icon(
                                     Icons.fingerprint,
-                                    color: Color(0xFF4EC3C7),
+                                    color: Color(0xFFF15A24),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Login with fingerprint',
                                     style: TbTextStyles.labelMedium.copyWith(
-                                      color: const Color(0xFF4EC3C7),
+                                      color: const Color(0xFFF15A24),
                                     ),
                                   ),
                                 ],
@@ -766,8 +765,8 @@ class _LoginPageState extends TbPageState<LoginPage>
       String password = formValue['password'];
       _isLoginNotifier.value = true;
       try {
-        await tbClient.login(LoginRequest(username, password));
         await _askEnableBiometric();
+        await tbClient.login(LoginRequest(username, password));
       } catch (e) {
         _isLoginNotifier.value = false;
         if (e is! ThingsboardError ||
