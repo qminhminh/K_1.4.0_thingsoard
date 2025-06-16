@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, prefer_single_quotes, avoid_print, unused_field, require_trailing_commas
 
 import 'dart:ui';
 
@@ -9,7 +9,9 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_gen/gen_l10n/messages.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thingsboard_app/constants/assets_path.dart';
 import 'package:thingsboard_app/core/auth/login/choose_region_screen.dart';
 import 'package:thingsboard_app/core/auth/login/region.dart';
@@ -41,11 +43,18 @@ class _LoginPageState extends TbPageState<LoginPage>
   final _loginFormKey = GlobalKey<FormBuilderState>();
 
   Region? selectedRegion;
+  final LocalAuthentication _localAuth = LocalAuthentication();
+  bool _isBiometricAvailable = false;
+  bool _showBiometricButton = false;
+  bool _isProcessing = false;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _checkBiometrics();
+    _checkBiometricEnabled();
     if (tbClient.isPreVerificationToken()) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         navigateTo('/login/mfa');
@@ -55,6 +64,7 @@ class _LoginPageState extends TbPageState<LoginPage>
 
   @override
   void dispose() {
+    _isDisposed = true;
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
   }
@@ -64,6 +74,126 @@ class _LoginPageState extends TbPageState<LoginPage>
     if (state == AppLifecycleState.resumed) {
       _isLoginNotifier.value = false;
     }
+  }
+
+  Future<void> _checkBiometrics() async {
+    try {
+      _isBiometricAvailable = await _localAuth.canCheckBiometrics;
+    } catch (e) {
+      _isBiometricAvailable = false;
+    }
+  }
+
+  Future<void> _checkBiometricEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    _showBiometricButton = prefs.getBool('biometric_enabled') ?? false;
+    setState(() {});
+  }
+
+  // 2. Update _askEnableBiometric() dialog to English
+  Future<void> _askEnableBiometric() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enable biometric login?'),
+        content: const Text(
+            'Do you want to enable biometric login for quick access next time?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('biometric_enabled', true);
+
+      // Save current login info
+      final formValue = _loginFormKey.currentState!.value;
+      await prefs.setString('username', formValue['username']);
+      await prefs.setString('password', formValue['password']);
+
+      setState(() {
+        _showBiometricButton = true;
+      });
+
+      _showErrorSnackbar("Biometric login enabled successfully!");
+    }
+  }
+
+  // 1. Update _authenticateWithBiometrics() error messages to English
+  Future<void> _authenticateWithBiometrics() async {
+    if (_isProcessing || _isDisposed) return;
+    _isProcessing = true;
+
+    try {
+      final bool didAuthenticate = await _localAuth.authenticate(
+        localizedReason: 'Please authenticate to login',
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+          biometricOnly: true,
+        ),
+      );
+
+      if (_isDisposed) {
+        _isProcessing = false;
+        return;
+      }
+
+      if (didAuthenticate) {
+        final prefs = await SharedPreferences.getInstance();
+        final savedUsername = prefs.getString('username');
+        final savedPassword = prefs.getString('password');
+
+        if (_isDisposed) {
+          _isProcessing = false;
+          return;
+        }
+
+        if (savedUsername != null &&
+            savedPassword != null &&
+            savedUsername.isNotEmpty &&
+            savedPassword.isNotEmpty) {
+          _isLoginNotifier.value = true;
+
+          try {
+            await tbClient.login(LoginRequest(savedUsername, savedPassword));
+          } catch (e) {
+            _isLoginNotifier.value = false;
+            print('Biometric login error: $e');
+            _showErrorSnackbar(
+                "Biometric login failed. Please login with your credentials.");
+          }
+        } else {
+          _showErrorSnackbar(
+              "No saved login information found. Please login with your credentials.");
+        }
+      } else {
+        _showErrorSnackbar(
+            "Biometric authentication failed or was cancelled. Please try again.");
+      }
+    } catch (e) {
+      print('Biometric authentication error: $e');
+      _showErrorSnackbar(
+          "Biometric authentication error. Please login with your credentials.");
+    } finally {
+      if (!_isDisposed) {
+        _isProcessing = false;
+      }
+    }
+  }
+
+  void _showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -359,6 +489,36 @@ class _LoginPageState extends TbPageState<LoginPage>
                               style: TbTextStyles.labelMedium,
                             ),
                           ),
+                          if (_showBiometricButton) ...[
+                            const SizedBox(height: 16),
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                side: const BorderSide(
+                                  color: Color(0xFF4EC3C7),
+                                ),
+                              ),
+                              onPressed: _authenticateWithBiometrics,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.fingerprint,
+                                    color: Color(0xFF4EC3C7),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Login with fingerprint',
+                                    style: TbTextStyles.labelMedium.copyWith(
+                                      color: const Color(0xFF4EC3C7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                           if (tbContext.hasSelfRegistration)
                             Column(
                               children: [
@@ -607,6 +767,7 @@ class _LoginPageState extends TbPageState<LoginPage>
       _isLoginNotifier.value = true;
       try {
         await tbClient.login(LoginRequest(username, password));
+        await _askEnableBiometric();
       } catch (e) {
         _isLoginNotifier.value = false;
         if (e is! ThingsboardError ||

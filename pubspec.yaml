@@ -63,6 +63,8 @@ dependencies:
   expandable: ^5.0.1
   focused_menu: ^1.0.5
   flutter_native_splash: ^2.4.4
+  local_auth: ^2.1.8
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

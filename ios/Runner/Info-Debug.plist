@@ -56,6 +56,8 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Scan QrCode or take photos using your camera.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app needs biometric authentication to secure your information</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Allow flutter tools on your computer to connect and debug your application.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
